@@ -152,16 +152,16 @@ client.on('interactionCreate', async interaction => {
         new TextInputBuilder().setCustomId('nom_equipe').setLabel('Nom de l\'équipe').setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(30)
       ),
       new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId('pseudo_bs_cap').setLabel('Ton pseudo Brawl Stars (Capitaine)').setStyle(TextInputStyle.Short).setRequired(true)
+        new TextInputBuilder().setCustomId('pseudo_bs_cap').setLabel('Pseudo Brawl Stars — Capitaine').setStyle(TextInputStyle.Short).setRequired(true)
       ),
       new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId('id_t2').setLabel('ID Discord Titulaire 2 (clic droit → Copier ID)').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: 123456789012345678')
+        new TextInputBuilder().setCustomId('id_t2').setLabel('ID Discord — Titulaire 2').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit sur profil → Copier identifiant')
       ),
       new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId('id_t3').setLabel('ID Discord Titulaire 3 (clic droit → Copier ID)').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: 123456789012345678')
+        new TextInputBuilder().setCustomId('id_t3').setLabel('ID Discord — Titulaire 3').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit sur profil → Copier identifiant')
       ),
       new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId('id_rempl').setLabel('ID Discord Remplaçant (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si pas de remplaçant')
+        new TextInputBuilder().setCustomId('id_rempl').setLabel('ID Discord — Remplaçant (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si pas de remplaçant')
       )
     )
 
@@ -181,16 +181,16 @@ client.on('interactionCreate', async interaction => {
         new TextInputBuilder().setCustomId('nom_equipe').setLabel('Nom de l\'équipe').setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(30)
       ),
       new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId('pseudo_mc_cap').setLabel('Ton pseudo Minecraft Java (Capitaine)').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)
+        new TextInputBuilder().setCustomId('pseudo_mc_cap').setLabel('Pseudo Minecraft Java — Capitaine').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)
       ),
       new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId('id_t2').setLabel('ID Discord Titulaire 2 (clic droit → Copier ID)').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: 123456789012345678')
+        new TextInputBuilder().setCustomId('id_t2').setLabel('ID Discord — Titulaire 2').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit sur profil → Copier identifiant')
       ),
       new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId('id_t3').setLabel('ID Discord Titulaire 3 (clic droit → Copier ID)').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: 123456789012345678')
+        new TextInputBuilder().setCustomId('id_t3').setLabel('ID Discord — Titulaire 3').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit sur profil → Copier identifiant')
       ),
       new ActionRowBuilder().addComponents(
-        new TextInputBuilder().setCustomId('id_rempl').setLabel('ID Discord Remplaçant (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si pas de remplaçant')
+        new TextInputBuilder().setCustomId('id_rempl').setLabel('ID Discord — Remplaçant (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si pas de remplaçant')
       )
     )
 
@@ -278,7 +278,7 @@ client.on('interactionCreate', async interaction => {
         embeds: [new EmbedBuilder()
           .setTitle(`📋 Nouvelle inscription — ${nomEquipe} (Brawl Stars)`)
           .setDescription(
-            `**Capitaine :** <@${discordCapId}> (Brawl Stars: ${pseudoBSCap})\n` +
+            `**Capitaine :** <@${discordCapId}> (BS: ${pseudoBSCap})\n` +
             `**Titulaire 2 :** <@${idT2}>\n` +
             `**Titulaire 3 :** <@${idT3}>\n` +
             (idRempl ? `**Remplaçant :** <@${idRempl}>\n` : '')
@@ -346,7 +346,7 @@ client.on('interactionCreate', async interaction => {
         embeds: [new EmbedBuilder()
           .setTitle(`📋 Nouvelle inscription — ${nomEquipe} (Minecraft)`)
           .setDescription(
-            `**Capitaine :** <@${discordCapId}> (Minecraft: ${pseudoMCCap})\n` +
+            `**Capitaine :** <@${discordCapId}> (MC: ${pseudoMCCap})\n` +
             `**Titulaire 2 :** <@${idT2}>\n` +
             `**Titulaire 3 :** <@${idT3}>\n` +
             (idRempl ? `**Remplaçant :** <@${idRempl}>\n` : '')
