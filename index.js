@@ -7,7 +7,6 @@ const STAFF_CHANNEL_ID = process.env.STAFF_CHANNEL_ID
 const INSCRIPTION_CHANNEL_ID = process.env.INSCRIPTION_CHANNEL_ID
 const CHERCHE_EQUIPIER_CHANNEL_ID = process.env.CHERCHE_EQUIPIER_CHANNEL_ID
 const EQUIPES_VALIDEES_CHANNEL_ID = process.env.EQUIPES_VALIDEES_CHANNEL_ID
-const SAVE_CHANNEL_ID = process.env.SAVE_CHANNEL_ID
 const ESERIES_CATEGORY_ID = process.env.ESERIES_CATEGORY_ID
 
 const client = new Client({
@@ -425,23 +424,24 @@ client.on('interactionCreate', async interaction => {
 
   // VALIDATION STAFF
   if (interaction.isButton() && interaction.customId.startsWith('valider_')) {
+    await interaction.deferUpdate()
+
     const id = interaction.customId.replace('valider_', '')
     const data = inscriptions.get(id)
-    if (!data) return interaction.reply({ content: 'Inscription introuvable.', ephemeral: true })
-
-    await interaction.deferUpdate()
+    if (!data) {
+      await interaction.followUp({ content: 'Inscription introuvable.', ephemeral: true })
+      return
+    }
 
     try {
       const guild = await client.guilds.fetch(GUILD_ID)
 
-      // Créer le rôle d'équipe
       const role = await guild.roles.create({
         name: data.nomEquipe,
         color: data.jeu === 'Brawl Stars' ? '#00C3FF' : '#5C8A00',
         reason: `E-Series — Équipe ${data.nomEquipe}`
       })
 
-      // Attribuer le rôle à tous les membres
       const tousLesIds = [
         data.capitaine.discordId,
         ...data.joueurs.map(j => j.discordId)
@@ -456,11 +456,10 @@ client.on('interactionCreate', async interaction => {
         }
       }
 
-      // Créer le canal d'équipe
       const category = await client.channels.fetch(ESERIES_CATEGORY_ID)
 
       const teamChannel = await guild.channels.create({
-        name: `chat-equipe-${data.nomEquipe.toLowerCase().replace(/\s+/g, '-')}`,
+        name: `chat-${data.nomEquipe.toLowerCase().replace(/\s+/g, '-')}`,
         type: ChannelType.GuildText,
         parent: category,
         permissionOverwrites: [
@@ -477,17 +476,15 @@ client.on('interactionCreate', async interaction => {
 
       await teamChannel.send({
         embeds: [new EmbedBuilder()
-          .setTitle(`🏆 Bienvenue dans le chat de l'équipe ${data.nomEquipe} !`)
+          .setTitle(`🏆 Bienvenue dans le chat de l\'équipe ${data.nomEquipe} !`)
           .setDescription(
             `**Jeu :** ${data.jeu}\n` +
-            `**Capitaine :** <@${data.capitaine.discordId}>\n` +
-            tousLesIds.map(id => `<@${id}>`).join(' ') +
-            `\n\nBonne chance pour la compétition !`
+            `**Membres :** ${tousLesIds.map(id => `<@${id}>`).join(' ')}\n\n` +
+            `Bonne chance pour la compétition !`
           )
           .setColor(data.jeu === 'Brawl Stars' ? '#00C3FF' : '#5C8A00')]
       })
 
-      // Publier dans le canal équipes validées
       const equipeChannel = await client.channels.fetch(EQUIPES_VALIDEES_CHANNEL_ID)
       await equipeChannel.send({
         embeds: [new EmbedBuilder()
@@ -522,11 +519,13 @@ client.on('interactionCreate', async interaction => {
 
   // REFUS STAFF
   if (interaction.isButton() && interaction.customId.startsWith('refuser_')) {
+    await interaction.deferUpdate()
+
     const id = interaction.customId.replace('refuser_', '')
     inscriptions.delete(id)
     await saveData()
 
-    await interaction.update({
+    await interaction.message.edit({
       embeds: [new EmbedBuilder()
         .setTitle('❌ Inscription refusée')
         .setColor('#FF0000')],
