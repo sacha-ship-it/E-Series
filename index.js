@@ -165,7 +165,7 @@ client.on('interactionCreate', async interaction => {
       )
     )
 
-    await interaction.showModal(modal)
+    return interaction.showModal(modal)
   }
 
   // BOUTON INSCRIPTION MINECRAFT
@@ -194,7 +194,7 @@ client.on('interactionCreate', async interaction => {
       )
     )
 
-    await interaction.showModal(modal)
+    return interaction.showModal(modal)
   }
 
   // BOUTON CHERCHE EQUIPIER BRAWL STARS
@@ -215,7 +215,7 @@ client.on('interactionCreate', async interaction => {
       )
     )
 
-    await interaction.showModal(modal)
+    return interaction.showModal(modal)
   }
 
   // BOUTON CHERCHE EQUIPIER MINECRAFT
@@ -233,7 +233,7 @@ client.on('interactionCreate', async interaction => {
       )
     )
 
-    await interaction.showModal(modal)
+    return interaction.showModal(modal)
   }
 
   // MODAL INSCRIPTION BRAWL STARS
@@ -376,50 +376,60 @@ client.on('interactionCreate', async interaction => {
   if (interaction.isModalSubmit() && interaction.customId === 'modal_cherche_bs') {
     await interaction.deferReply({ ephemeral: true })
 
-    const pseudoBS = interaction.fields.getTextInputValue('pseudo_bs')
-    const tagBS = interaction.fields.getTextInputValue('tag_bs')
-    const presentation = interaction.fields.getTextInputValue('presentation')
+    try {
+      const pseudoBS = interaction.fields.getTextInputValue('pseudo_bs')
+      const tagBS = interaction.fields.getTextInputValue('tag_bs')
+      const presentation = interaction.fields.getTextInputValue('presentation')
 
-    const chercheChannel = await client.channels.fetch(CHERCHE_EQUIPIER_CHANNEL_ID)
+      const chercheChannel = await client.channels.fetch(CHERCHE_EQUIPIER_CHANNEL_ID)
 
-    await chercheChannel.send({
-      embeds: [new EmbedBuilder()
-        .setTitle('🔍 Recherche équipe — Brawl Stars')
-        .setDescription(
-          `**Joueur :** <@${interaction.user.id}>\n` +
-          `**Pseudo Brawl Stars :** ${pseudoBS}\n` +
-          `**Tag :** ${tagBS}\n\n` +
-          `**Présentation :** ${presentation}`
-        )
-        .setColor('#FF6B35')
-        .setTimestamp()]
-    })
+      await chercheChannel.send({
+        embeds: [new EmbedBuilder()
+          .setTitle('🔍 Recherche équipe — Brawl Stars')
+          .setDescription(
+            `**Joueur :** <@${interaction.user.id}>\n` +
+            `**Pseudo Brawl Stars :** ${pseudoBS}\n` +
+            `**Tag :** ${tagBS}\n\n` +
+            `**Présentation :** ${presentation}`
+          )
+          .setColor('#FF6B35')
+          .setTimestamp()]
+      })
 
-    await interaction.editReply({ content: '✅ Ton profil a été posté dans le canal de recherche d\'équipe !' })
+      await interaction.editReply({ content: '✅ Ton profil a été posté dans le canal de recherche d\'équipe !' })
+    } catch (e) {
+      console.error('Erreur cherche BS:', e.message)
+      await interaction.editReply({ content: 'Une erreur s\'est produite. Réessaie.' })
+    }
   }
 
   // MODAL CHERCHE EQUIPIER MC
   if (interaction.isModalSubmit() && interaction.customId === 'modal_cherche_mc') {
     await interaction.deferReply({ ephemeral: true })
 
-    const pseudoMC = interaction.fields.getTextInputValue('pseudo_mc')
-    const presentation = interaction.fields.getTextInputValue('presentation')
+    try {
+      const pseudoMC = interaction.fields.getTextInputValue('pseudo_mc')
+      const presentation = interaction.fields.getTextInputValue('presentation')
 
-    const chercheChannel = await client.channels.fetch(CHERCHE_EQUIPIER_CHANNEL_ID)
+      const chercheChannel = await client.channels.fetch(CHERCHE_EQUIPIER_CHANNEL_ID)
 
-    await chercheChannel.send({
-      embeds: [new EmbedBuilder()
-        .setTitle('🔍 Recherche équipe — Minecraft')
-        .setDescription(
-          `**Joueur :** <@${interaction.user.id}>\n` +
-          `**Pseudo Minecraft Java :** ${pseudoMC}\n\n` +
-          `**Présentation :** ${presentation}`
-        )
-        .setColor('#5C8A00')
-        .setTimestamp()]
-    })
+      await chercheChannel.send({
+        embeds: [new EmbedBuilder()
+          .setTitle('🔍 Recherche équipe — Minecraft')
+          .setDescription(
+            `**Joueur :** <@${interaction.user.id}>\n` +
+            `**Pseudo Minecraft Java :** ${pseudoMC}\n\n` +
+            `**Présentation :** ${presentation}`
+          )
+          .setColor('#5C8A00')
+          .setTimestamp()]
+      })
 
-    await interaction.editReply({ content: '✅ Ton profil a été posté dans le canal de recherche d\'équipe !' })
+      await interaction.editReply({ content: '✅ Ton profil a été posté dans le canal de recherche d\'équipe !' })
+    } catch (e) {
+      console.error('Erreur cherche MC:', e.message)
+      await interaction.editReply({ content: 'Une erreur s\'est produite. Réessaie.' })
+    }
   }
 
   // VALIDATION STAFF
@@ -476,11 +486,11 @@ client.on('interactionCreate', async interaction => {
 
       await teamChannel.send({
         embeds: [new EmbedBuilder()
-          .setTitle(`🏆 Bienvenue dans le chat de l\'équipe ${data.nomEquipe} !`)
+          .setTitle(`🏆 Bienvenue dans le chat de l'équipe ${data.nomEquipe} !`)
           .setDescription(
             `**Jeu :** ${data.jeu}\n` +
             `**Membres :** ${tousLesIds.map(id => `<@${id}>`).join(' ')}\n\n` +
-            `Bonne chance pour la compétition !`
+            `Bonne chance pour la compétition ! 🎮`
           )
           .setColor(data.jeu === 'Brawl Stars' ? '#00C3FF' : '#5C8A00')]
       })
