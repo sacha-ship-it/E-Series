@@ -8,7 +8,6 @@ const INSCRIPTION_CHANNEL_ID = process.env.INSCRIPTION_CHANNEL_ID
 const CHERCHE_EQUIPIER_CHANNEL_ID = process.env.CHERCHE_EQUIPIER_CHANNEL_ID
 const EQUIPES_VALIDEES_CHANNEL_ID = process.env.EQUIPES_VALIDEES_CHANNEL_ID
 const ESERIES_CATEGORY_ID = process.env.ESERIES_CATEGORY_ID
-const SETUP_IMAGE_URL = process.env.SETUP_IMAGE_URL // optionnel : URL de l'image dans le message d'inscription
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
@@ -57,7 +56,10 @@ async function loadData() {
 
 async function registerCommands() {
   const commands = [
-    new SlashCommandBuilder().setName('setup-eseries').setDescription('Poster le message d\'inscription E-Series (admin)'),
+    new SlashCommandBuilder()
+      .setName('setup-eseries')
+      .setDescription('Poster le message d\'inscription E-Series (admin)')
+      .addStringOption(opt => opt.setName('image').setDescription('URL de l\'image a afficher dans le message (optionnel)').setRequired(false)),
     new SlashCommandBuilder().setName('listequipes').setDescription('Voir toutes les equipes inscrites (admin)'),
     new SlashCommandBuilder().setName('exportequipes').setDescription('Exporter les equipes en CSV (admin)'),
     new SlashCommandBuilder().setName('fermerinscriptions').setDescription('Fermer les inscriptions (admin)'),
@@ -130,6 +132,7 @@ client.on('interactionCreate', async interaction => {
     const isAdmin = interaction.member.permissions.has('Administrator')
     if (!isAdmin) return interaction.reply({ content: 'Permission refusee.', ephemeral: true })
 
+    const imageUrl = interaction.options.getString('image')
     const channel = await client.channels.fetch(INSCRIPTION_CHANNEL_ID)
 
     const row1 = new ActionRowBuilder().addComponents(
@@ -154,13 +157,13 @@ client.on('interactionCreate', async interaction => {
         '*(entre 4 et 6 personnes par equipe)*\n\n' +
         '**Conditions :** Tous les participants doivent etre membres du Discord Shortcut. Une personne ne peut etre inscrite que dans une seule equipe.\n\n' +
         '⚠️ **Tu auras besoin des IDs Discord de tes coequipiers.** Pour les trouver : clic droit sur leur profil -> Copier l\'identifiant.\n\n' +
-        '💰 **500 € de cashback a gagner** pour les equipes gagnantes !\n\n' +
+        '🏆 **500 € de cashprize** pour les equipes gagnantes !\n\n' +
         '📋 L\'inscription se fait en **2 etapes**.'
       )
       .setColor('#00C3FF')
       .setFooter({ text: 'Shortcut E-Series - Les inscriptions sont ouvertes' })
 
-    if (SETUP_IMAGE_URL) embed.setImage(SETUP_IMAGE_URL)
+    if (imageUrl) embed.setImage(imageUrl)
 
     await channel.send({
       embeds: [embed],
