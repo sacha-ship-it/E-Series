@@ -8,6 +8,7 @@ const INSCRIPTION_CHANNEL_ID = process.env.INSCRIPTION_CHANNEL_ID
 const CHERCHE_EQUIPIER_CHANNEL_ID = process.env.CHERCHE_EQUIPIER_CHANNEL_ID
 const EQUIPES_VALIDEES_CHANNEL_ID = process.env.EQUIPES_VALIDEES_CHANNEL_ID
 const ESERIES_CATEGORY_ID = process.env.ESERIES_CATEGORY_ID
+const SETUP_IMAGE_URL = process.env.SETUP_IMAGE_URL // optionnel : URL de l'image dans le message d'inscription
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
@@ -47,77 +48,77 @@ async function loadData() {
       if (parsed.inscriptions) Object.entries(parsed.inscriptions).forEach(([k, v]) => inscriptions.set(k, v))
       inscriptionsOpen = parsed.inscriptionsOpen !== false
       saveMessageId = dataMsg.id
-      console.log(`${inscriptions.size} équipes chargées`)
+      console.log(`${inscriptions.size} equipes chargees`)
     }
   } catch (e) {
-    console.log('Pas de données existantes')
+    console.log('Pas de donnees existantes')
   }
 }
 
 async function registerCommands() {
   const commands = [
     new SlashCommandBuilder().setName('setup-eseries').setDescription('Poster le message d\'inscription E-Series (admin)'),
-    new SlashCommandBuilder().setName('listequipes').setDescription('Voir toutes les équipes inscrites (admin)'),
-    new SlashCommandBuilder().setName('exportequipes').setDescription('Exporter les équipes en CSV (admin)'),
+    new SlashCommandBuilder().setName('listequipes').setDescription('Voir toutes les equipes inscrites (admin)'),
+    new SlashCommandBuilder().setName('exportequipes').setDescription('Exporter les equipes en CSV (admin)'),
     new SlashCommandBuilder().setName('fermerinscriptions').setDescription('Fermer les inscriptions (admin)'),
     new SlashCommandBuilder().setName('ouvrirscriptions').setDescription('Ouvrir les inscriptions (admin)'),
   ].map(c => c.toJSON())
 
   const rest = new REST({ version: '10' }).setToken(TOKEN)
   await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), { body: commands })
-  console.log('Commandes enregistrées')
+  console.log('Commandes enregistrees')
 }
 
 function buildModal1BS() {
-  const modal = new ModalBuilder().setCustomId('modal_bs_1').setTitle('Inscription Brawl Stars — Étape 1/2')
+  const modal = new ModalBuilder().setCustomId('modal_bs_1').setTitle('Inscription Brawl Stars - Etape 1/2')
   modal.addComponents(
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('nom_equipe').setLabel('Nom de l\'équipe').setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(30)),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_cap').setLabel('Pseudo Brawl Stars — Capitaine').setStyle(TextInputStyle.Short).setRequired(true)),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('tag_cap').setLabel('Tag Brawl Stars — Capitaine').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: #ABC123')),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_t2').setLabel('ID Discord — Titulaire 2').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit → Copier identifiant')),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_t3').setLabel('ID Discord — Titulaire 3').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit → Copier identifiant'))
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('nom_equipe').setLabel('Nom de l\'equipe').setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(30)),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_cap').setLabel('Pseudo Brawl Stars - Capitaine').setStyle(TextInputStyle.Short).setRequired(true)),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('tag_cap').setLabel('Tag Brawl Stars - Capitaine').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: #ABC123')),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_t2').setLabel('ID Discord - Titulaire 2').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit -> Copier identifiant')),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_t3').setLabel('ID Discord - Titulaire 3').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit -> Copier identifiant'))
   )
   return modal
 }
 
 function buildModal2BS() {
-  const modal = new ModalBuilder().setCustomId('modal_bs_2').setTitle('Inscription Brawl Stars — Étape 2/2')
+  const modal = new ModalBuilder().setCustomId('modal_bs_2').setTitle('Inscription Brawl Stars - Etape 2/2')
   modal.addComponents(
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('info_t2').setLabel('Pseudo + Tag — Titulaire 2').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: MonPseudo #ABC123')),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('info_t3').setLabel('Pseudo + Tag — Titulaire 3').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: MonPseudo #ABC123')),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_rempl1').setLabel('ID Discord — Remplaçant 1').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit → Copier identifiant')),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_rempl2').setLabel('ID Discord — Remplaçant 2 (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si absent')),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_coach').setLabel('ID Discord — Coach (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si absent'))
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('info_t2').setLabel('Pseudo + Tag - Titulaire 2').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: MonPseudo #ABC123')),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('info_t3').setLabel('Pseudo + Tag - Titulaire 3').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: MonPseudo #ABC123')),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_rempl1').setLabel('ID Discord - Remplacant 1').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit -> Copier identifiant')),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_rempl2').setLabel('ID Discord - Remplacant 2 (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si absent')),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_coach').setLabel('ID Discord - Coach (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si absent'))
   )
   return modal
 }
 
 function buildModal1MC() {
-  const modal = new ModalBuilder().setCustomId('modal_mc_1').setTitle('Inscription Minecraft — Étape 1/2')
+  const modal = new ModalBuilder().setCustomId('modal_mc_1').setTitle('Inscription Minecraft - Etape 1/2')
   modal.addComponents(
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('nom_equipe').setLabel('Nom de l\'équipe').setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(30)),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_cap').setLabel('Pseudo Minecraft Java — Capitaine').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_t2').setLabel('ID Discord — Titulaire 2').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit → Copier identifiant')),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_t3').setLabel('ID Discord — Titulaire 3').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit → Copier identifiant')),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_rempl1').setLabel('ID Discord — Remplaçant 1').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit → Copier identifiant'))
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('nom_equipe').setLabel('Nom de l\'equipe').setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(30)),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_cap').setLabel('Pseudo Minecraft Java - Capitaine').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_t2').setLabel('ID Discord - Titulaire 2').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit -> Copier identifiant')),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_t3').setLabel('ID Discord - Titulaire 3').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit -> Copier identifiant')),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_rempl1').setLabel('ID Discord - Remplacant 1').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Clic droit -> Copier identifiant'))
   )
   return modal
 }
 
 function buildModal2MC() {
-  const modal = new ModalBuilder().setCustomId('modal_mc_2').setTitle('Inscription Minecraft — Étape 2/2')
+  const modal = new ModalBuilder().setCustomId('modal_mc_2').setTitle('Inscription Minecraft - Etape 2/2')
   modal.addComponents(
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_t2').setLabel('Pseudo Minecraft Java — Titulaire 2').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_t3').setLabel('Pseudo Minecraft Java — Titulaire 3').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_rempl1').setLabel('Pseudo Minecraft Java — Remplaçant 1').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_rempl2').setLabel('ID Discord — Remplaçant 2 (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si absent')),
-    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_coach').setLabel('ID Discord — Coach (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si absent'))
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_t2').setLabel('Pseudo Minecraft Java - Titulaire 2').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_t3').setLabel('Pseudo Minecraft Java - Titulaire 3').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_rempl1').setLabel('Pseudo Minecraft Java - Remplacant 1').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_rempl2').setLabel('ID Discord - Remplacant 2 (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si absent')),
+    new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('id_coach').setLabel('ID Discord - Coach (optionnel)').setStyle(TextInputStyle.Short).setRequired(false).setPlaceholder('Laisser vide si absent'))
   )
   return modal
 }
 
 client.on('ready', async () => {
-  console.log(`Bot connecté : ${client.user.tag}`)
+  console.log(`Bot connecte : ${client.user.tag}`)
   await registerCommands()
   await loadData()
 })
@@ -127,70 +128,75 @@ client.on('interactionCreate', async interaction => {
   // SETUP
   if (interaction.isChatInputCommand() && interaction.commandName === 'setup-eseries') {
     const isAdmin = interaction.member.permissions.has('Administrator')
-    if (!isAdmin) return interaction.reply({ content: 'Permission refusée.', ephemeral: true })
+    if (!isAdmin) return interaction.reply({ content: 'Permission refusee.', ephemeral: true })
 
     const channel = await client.channels.fetch(INSCRIPTION_CHANNEL_ID)
 
     const row1 = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId('inscrit_bs').setLabel('🎮 Inscrire mon équipe — Brawl Stars').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId('inscrit_mc').setLabel('⛏️ Inscrire mon équipe — Minecraft').setStyle(ButtonStyle.Success)
+      new ButtonBuilder().setCustomId('inscrit_bs').setLabel('🎮 Inscrire mon equipe - Brawl Stars').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId('inscrit_mc').setLabel('⛏️ Inscrire mon equipe - Minecraft').setStyle(ButtonStyle.Success)
     )
     const row2 = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId('cherche_bs').setLabel('🔍 Chercher une équipe — Brawl Stars').setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder().setCustomId('cherche_mc').setLabel('🔍 Chercher une équipe — Minecraft').setStyle(ButtonStyle.Secondary)
+      new ButtonBuilder().setCustomId('cherche_bs').setLabel('🔍 Chercher une equipe - Brawl Stars').setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId('cherche_mc').setLabel('🔍 Chercher une equipe - Minecraft').setStyle(ButtonStyle.Secondary)
     )
 
+    const embed = new EmbedBuilder()
+      .setTitle('🏆 SHORTCUT E-SERIES - INSCRIPTIONS')
+      .setDescription(
+        '**Tu as une equipe ?** Clique sur le bouton correspondant a ton jeu.\n\n' +
+        '**Tu es solo ?** Clique sur "Chercher une equipe".\n\n' +
+        '**Composition obligatoire :**\n' +
+        '• 3 titulaires dont 1 capitaine\n' +
+        '• 1 remplacant obligatoire\n' +
+        '• 1 remplacant optionnel\n' +
+        '• 1 coach optionnel\n' +
+        '*(entre 4 et 6 personnes par equipe)*\n\n' +
+        '**Conditions :** Tous les participants doivent etre membres du Discord Shortcut. Une personne ne peut etre inscrite que dans une seule equipe.\n\n' +
+        '⚠️ **Tu auras besoin des IDs Discord de tes coequipiers.** Pour les trouver : clic droit sur leur profil -> Copier l\'identifiant.\n\n' +
+        '💰 **500 € de cashback a gagner** pour les equipes gagnantes !\n\n' +
+        '📋 L\'inscription se fait en **2 etapes**.'
+      )
+      .setColor('#00C3FF')
+      .setFooter({ text: 'Shortcut E-Series - Les inscriptions sont ouvertes' })
+
+    if (SETUP_IMAGE_URL) embed.setImage(SETUP_IMAGE_URL)
+
     await channel.send({
-      embeds: [new EmbedBuilder()
-        .setTitle('🏆 SHORTCUT E-SERIES — INSCRIPTIONS')
-        .setDescription(
-          '**Tu as une équipe ?** Clique sur le bouton correspondant à ton jeu.\n\n' +
-          '**Tu es solo ?** Clique sur "Chercher une équipe".\n\n' +
-          '**Composition obligatoire :**\n' +
-          '• 3 titulaires dont 1 capitaine\n' +
-          '• 1 remplaçant obligatoire\n' +
-          '• 1 remplaçant optionnel\n' +
-          '• 1 coach optionnel\n' +
-          '*(entre 4 et 6 personnes par équipe)*\n\n' +
-          '**Conditions :** Tous les participants doivent être membres du Discord Shortcut. Une personne ne peut être inscrite que dans une seule équipe.\n\n' +
-          '⚠️ **Tu auras besoin des IDs Discord de tes coéquipiers.** Pour les trouver : clic droit sur leur profil → Copier l\'identifiant.\n\n' +
-          '📋 L\'inscription se fait en **2 étapes**.'
-        )
-        .setColor('#00C3FF')
-        .setFooter({ text: 'Shortcut E-Series • Les inscriptions sont ouvertes' })],
+      embeds: [embed],
       components: [row1, row2]
     })
 
-    await interaction.reply({ content: 'Message posté !', ephemeral: true })
+    await interaction.reply({ content: 'Message poste !', ephemeral: true })
   }
 
   // BOUTONS INSCRIPTION
   if (interaction.isButton() && interaction.customId === 'inscrit_bs') {
-    if (!inscriptionsOpen) return interaction.reply({ content: '❌ Les inscriptions sont fermées.', ephemeral: true })
+    if (!inscriptionsOpen) return interaction.reply({ content: '❌ Les inscriptions sont fermees.', ephemeral: true })
     return interaction.showModal(buildModal1BS())
   }
 
   if (interaction.isButton() && interaction.customId === 'inscrit_mc') {
-    if (!inscriptionsOpen) return interaction.reply({ content: '❌ Les inscriptions sont fermées.', ephemeral: true })
+    if (!inscriptionsOpen) return interaction.reply({ content: '❌ Les inscriptions sont fermees.', ephemeral: true })
     return interaction.showModal(buildModal1MC())
   }
 
   // BOUTONS CHERCHE EQUIPIER
   if (interaction.isButton() && interaction.customId === 'cherche_bs') {
-    const modal = new ModalBuilder().setCustomId('modal_cherche_bs').setTitle('Chercher une équipe — Brawl Stars')
+    const modal = new ModalBuilder().setCustomId('modal_cherche_bs').setTitle('Chercher une equipe - Brawl Stars')
     modal.addComponents(
       new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_bs').setLabel('Ton pseudo Brawl Stars').setStyle(TextInputStyle.Short).setRequired(true)),
       new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('tag_bs').setLabel('Ton tag Brawl Stars').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('Ex: #ABC123')),
-      new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('presentation').setLabel('Présente-toi en quelques mots').setStyle(TextInputStyle.Paragraph).setRequired(true).setMaxLength(200))
+      new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('presentation').setLabel('Presente-toi en quelques mots').setStyle(TextInputStyle.Paragraph).setRequired(true).setMaxLength(200))
     )
     return interaction.showModal(modal)
   }
 
   if (interaction.isButton() && interaction.customId === 'cherche_mc') {
-    const modal = new ModalBuilder().setCustomId('modal_cherche_mc').setTitle('Chercher une équipe — Minecraft')
+    const modal = new ModalBuilder().setCustomId('modal_cherche_mc').setTitle('Chercher une equipe - Minecraft')
     modal.addComponents(
       new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('pseudo_mc').setLabel('Ton pseudo Minecraft Java exact').setStyle(TextInputStyle.Short).setRequired(true).setMinLength(3).setMaxLength(16)),
-      new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('presentation').setLabel('Présente-toi en quelques mots').setStyle(TextInputStyle.Paragraph).setRequired(true).setMaxLength(200))
+      new ActionRowBuilder().addComponents(new TextInputBuilder().setCustomId('presentation').setLabel('Presente-toi en quelques mots').setStyle(TextInputStyle.Paragraph).setRequired(true).setMaxLength(200))
     )
     return interaction.showModal(modal)
   }
@@ -223,14 +229,14 @@ client.on('interactionCreate', async interaction => {
       })
 
       const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId(`etape2_bs_${interaction.user.id}`).setLabel('➡️ Continuer — Étape 2/2').setStyle(ButtonStyle.Primary)
+        new ButtonBuilder().setCustomId(`etape2_bs_${interaction.user.id}`).setLabel('➡️ Continuer - Etape 2/2').setStyle(ButtonStyle.Primary)
       )
 
       await interaction.editReply({
         content:
-          `✅ **Étape 1 enregistrée !**\n\n` +
-          `**Équipe :** ${nomEquipe}\n` +
-          `**Capitaine :** <@${interaction.user.id}> (${pseudoCap} — ${tagCap})\n` +
+          `✅ **Etape 1 enregistree !**\n\n` +
+          `**Equipe :** ${nomEquipe}\n` +
+          `**Capitaine :** <@${interaction.user.id}> (${pseudoCap} - ${tagCap})\n` +
           `**Titulaire 2 :** <@${idT2}>\n` +
           `**Titulaire 3 :** <@${idT3}>\n\n` +
           `Clique sur le bouton pour continuer l'inscription 👇`,
@@ -238,7 +244,7 @@ client.on('interactionCreate', async interaction => {
       })
     } catch (e) {
       console.error('Erreur modal BS 1:', e.message)
-      await interaction.editReply({ content: 'Une erreur s\'est produite. Réessaie.' })
+      await interaction.editReply({ content: 'Une erreur s\'est produite. Reessaie.' })
     }
   }
 
@@ -248,7 +254,7 @@ client.on('interactionCreate', async interaction => {
 
     try {
       const step1 = pendingStep1.get(interaction.user.id)
-      if (!step1) return interaction.editReply({ content: '❌ Session expirée. Recommence depuis le début.' })
+      if (!step1) return interaction.editReply({ content: '❌ Session expiree. Recommence depuis le debut.' })
 
       const infoT2 = interaction.fields.getTextInputValue('info_t2').trim()
       const infoT3 = interaction.fields.getTextInputValue('info_t3').trim()
@@ -265,8 +271,8 @@ client.on('interactionCreate', async interaction => {
         joueurs: [
           { discordId: step1.idT2, info: infoT2, role: 'Titulaire 2' },
           { discordId: step1.idT3, info: infoT3, role: 'Titulaire 3' },
-          { discordId: idRempl1, role: 'Remplaçant 1' },
-          ...(idRempl2 ? [{ discordId: idRempl2, role: 'Remplaçant 2' }] : []),
+          { discordId: idRempl1, role: 'Remplacant 1' },
+          ...(idRempl2 ? [{ discordId: idRempl2, role: 'Remplacant 2' }] : []),
           ...(idCoach ? [{ discordId: idCoach, role: 'Coach' }] : [])
         ],
         createdAt: new Date().toISOString()
@@ -284,13 +290,13 @@ client.on('interactionCreate', async interaction => {
 
       await staffChannel.send({
         embeds: [new EmbedBuilder()
-          .setTitle(`📋 Nouvelle inscription — ${data.nomEquipe} (Brawl Stars)`)
+          .setTitle(`📋 Nouvelle inscription - ${data.nomEquipe} (Brawl Stars)`)
           .setDescription(
-            `**Capitaine :** <@${data.capitaine.discordId}> (${data.capitaine.pseudo} — ${data.capitaine.tag})\n` +
+            `**Capitaine :** <@${data.capitaine.discordId}> (${data.capitaine.pseudo} - ${data.capitaine.tag})\n` +
             `**Titulaire 2 :** <@${step1.idT2}> (${infoT2})\n` +
             `**Titulaire 3 :** <@${step1.idT3}> (${infoT3})\n` +
-            `**Remplaçant 1 :** <@${idRempl1}>\n` +
-            (idRempl2 ? `**Remplaçant 2 :** <@${idRempl2}>\n` : '') +
+            `**Remplacant 1 :** <@${idRempl1}>\n` +
+            (idRempl2 ? `**Remplacant 2 :** <@${idRempl2}>\n` : '') +
             (idCoach ? `**Coach :** <@${idCoach}>\n` : '')
           )
           .setColor('#00C3FF')
@@ -300,19 +306,19 @@ client.on('interactionCreate', async interaction => {
 
       await interaction.editReply({
         content:
-          `✅ **Inscription complète envoyée au staff !**\n\n` +
-          `**Équipe :** ${data.nomEquipe} — Brawl Stars\n` +
+          `✅ **Inscription complete envoyee au staff !**\n\n` +
+          `**Equipe :** ${data.nomEquipe} - Brawl Stars\n` +
           `**Capitaine :** <@${data.capitaine.discordId}>\n` +
           `**Titulaire 2 :** <@${step1.idT2}>\n` +
           `**Titulaire 3 :** <@${step1.idT3}>\n` +
-          `**Remplaçant 1 :** <@${idRempl1}>\n` +
-          (idRempl2 ? `**Remplaçant 2 :** <@${idRempl2}>\n` : '') +
+          `**Remplacant 1 :** <@${idRempl1}>\n` +
+          (idRempl2 ? `**Remplacant 2 :** <@${idRempl2}>\n` : '') +
           (idCoach ? `**Coach :** <@${idCoach}>\n` : '') +
           `\nVotre inscription est en attente de validation 🙏`
       })
     } catch (e) {
       console.error('Erreur modal BS 2:', e.message)
-      await interaction.editReply({ content: 'Une erreur s\'est produite. Réessaie.' })
+      await interaction.editReply({ content: 'Une erreur s\'est produite. Reessaie.' })
     }
   }
 
@@ -335,23 +341,23 @@ client.on('interactionCreate', async interaction => {
       })
 
       const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId(`etape2_mc_${interaction.user.id}`).setLabel('➡️ Continuer — Étape 2/2').setStyle(ButtonStyle.Success)
+        new ButtonBuilder().setCustomId(`etape2_mc_${interaction.user.id}`).setLabel('➡️ Continuer - Etape 2/2').setStyle(ButtonStyle.Success)
       )
 
       await interaction.editReply({
         content:
-          `✅ **Étape 1 enregistrée !**\n\n` +
-          `**Équipe :** ${nomEquipe}\n` +
+          `✅ **Etape 1 enregistree !**\n\n` +
+          `**Equipe :** ${nomEquipe}\n` +
           `**Capitaine :** <@${interaction.user.id}> (${pseudoCap})\n` +
           `**Titulaire 2 :** <@${idT2}>\n` +
           `**Titulaire 3 :** <@${idT3}>\n` +
-          `**Remplaçant 1 :** <@${idRempl1}>\n\n` +
+          `**Remplacant 1 :** <@${idRempl1}>\n\n` +
           `Clique sur le bouton pour continuer l'inscription 👇`,
         components: [row]
       })
     } catch (e) {
       console.error('Erreur modal MC 1:', e.message)
-      await interaction.editReply({ content: 'Une erreur s\'est produite. Réessaie.' })
+      await interaction.editReply({ content: 'Une erreur s\'est produite. Reessaie.' })
     }
   }
 
@@ -361,7 +367,7 @@ client.on('interactionCreate', async interaction => {
 
     try {
       const step1 = pendingStep1.get(interaction.user.id)
-      if (!step1) return interaction.editReply({ content: '❌ Session expirée. Recommence depuis le début.' })
+      if (!step1) return interaction.editReply({ content: '❌ Session expiree. Recommence depuis le debut.' })
 
       const pseudoT2 = interaction.fields.getTextInputValue('pseudo_t2').trim()
       const pseudoT3 = interaction.fields.getTextInputValue('pseudo_t3').trim()
@@ -370,9 +376,9 @@ client.on('interactionCreate', async interaction => {
       const idCoach = interaction.fields.getTextInputValue('id_coach').trim()
 
       const mcRegex = /^[a-zA-Z0-9_]{3,16}$/
-      if (!mcRegex.test(pseudoT2)) return interaction.editReply({ content: `❌ Pseudo Minecraft invalide pour le Titulaire 2 : **${pseudoT2}**\nUniquement lettres, chiffres et underscores (3-16 caractères).` })
-      if (!mcRegex.test(pseudoT3)) return interaction.editReply({ content: `❌ Pseudo Minecraft invalide pour le Titulaire 3 : **${pseudoT3}**\nUniquement lettres, chiffres et underscores (3-16 caractères).` })
-      if (!mcRegex.test(pseudoRempl1)) return interaction.editReply({ content: `❌ Pseudo Minecraft invalide pour le Remplaçant 1 : **${pseudoRempl1}**\nUniquement lettres, chiffres et underscores (3-16 caractères).` })
+      if (!mcRegex.test(pseudoT2)) return interaction.editReply({ content: `❌ Pseudo Minecraft invalide pour le Titulaire 2 : **${pseudoT2}**\nUniquement lettres, chiffres et underscores (3-16 caracteres).` })
+      if (!mcRegex.test(pseudoT3)) return interaction.editReply({ content: `❌ Pseudo Minecraft invalide pour le Titulaire 3 : **${pseudoT3}**\nUniquement lettres, chiffres et underscores (3-16 caracteres).` })
+      if (!mcRegex.test(pseudoRempl1)) return interaction.editReply({ content: `❌ Pseudo Minecraft invalide pour le Remplacant 1 : **${pseudoRempl1}**\nUniquement lettres, chiffres et underscores (3-16 caracteres).` })
 
       const data = {
         id: step1.tempId,
@@ -383,8 +389,8 @@ client.on('interactionCreate', async interaction => {
         joueurs: [
           { discordId: step1.idT2, pseudo: pseudoT2, role: 'Titulaire 2' },
           { discordId: step1.idT3, pseudo: pseudoT3, role: 'Titulaire 3' },
-          { discordId: step1.idRempl1, pseudo: pseudoRempl1, role: 'Remplaçant 1' },
-          ...(idRempl2 ? [{ discordId: idRempl2, role: 'Remplaçant 2' }] : []),
+          { discordId: step1.idRempl1, pseudo: pseudoRempl1, role: 'Remplacant 1' },
+          ...(idRempl2 ? [{ discordId: idRempl2, role: 'Remplacant 2' }] : []),
           ...(idCoach ? [{ discordId: idCoach, role: 'Coach' }] : [])
         ],
         createdAt: new Date().toISOString()
@@ -402,15 +408,15 @@ client.on('interactionCreate', async interaction => {
 
       await staffChannel.send({
         embeds: [new EmbedBuilder()
-          .setTitle(`📋 Nouvelle inscription — ${data.nomEquipe} (Minecraft)`)
+          .setTitle(`📋 Nouvelle inscription - ${data.nomEquipe} (Minecraft)`)
           .setDescription(
             `**Capitaine :** <@${data.capitaine.discordId}> (MC: ${data.capitaine.pseudo})\n` +
             `**Titulaire 2 :** <@${step1.idT2}> (MC: ${pseudoT2})\n` +
             `**Titulaire 3 :** <@${step1.idT3}> (MC: ${pseudoT3})\n` +
-            `**Remplaçant 1 :** <@${step1.idRempl1}> (MC: ${pseudoRempl1})\n` +
-            (idRempl2 ? `**Remplaçant 2 :** <@${idRempl2}>\n` : '') +
+            `**Remplacant 1 :** <@${step1.idRempl1}> (MC: ${pseudoRempl1})\n` +
+            (idRempl2 ? `**Remplacant 2 :** <@${idRempl2}>\n` : '') +
             (idCoach ? `**Coach :** <@${idCoach}>\n` : '') +
-            `\n⚠️ Vérifier que tous les joueurs possèdent un compte Minecraft Java officiel.`
+            `\n⚠️ Verifier que tous les joueurs possedent un compte Minecraft Java officiel.`
           )
           .setColor('#5C8A00')
           .setTimestamp()],
@@ -419,19 +425,19 @@ client.on('interactionCreate', async interaction => {
 
       await interaction.editReply({
         content:
-          `✅ **Inscription complète envoyée au staff !**\n\n` +
-          `**Équipe :** ${data.nomEquipe} — Minecraft Java\n` +
+          `✅ **Inscription complete envoyee au staff !**\n\n` +
+          `**Equipe :** ${data.nomEquipe} - Minecraft Java\n` +
           `**Capitaine :** <@${data.capitaine.discordId}> (${data.capitaine.pseudo})\n` +
           `**Titulaire 2 :** <@${step1.idT2}> (${pseudoT2})\n` +
           `**Titulaire 3 :** <@${step1.idT3}> (${pseudoT3})\n` +
-          `**Remplaçant 1 :** <@${step1.idRempl1}> (${pseudoRempl1})\n` +
-          (idRempl2 ? `**Remplaçant 2 :** <@${idRempl2}>\n` : '') +
+          `**Remplacant 1 :** <@${step1.idRempl1}> (${pseudoRempl1})\n` +
+          (idRempl2 ? `**Remplacant 2 :** <@${idRempl2}>\n` : '') +
           (idCoach ? `**Coach :** <@${idCoach}>\n` : '') +
           `\nVotre inscription est en attente de validation 🙏`
       })
     } catch (e) {
       console.error('Erreur modal MC 2:', e.message)
-      await interaction.editReply({ content: 'Une erreur s\'est produite. Réessaie.' })
+      await interaction.editReply({ content: 'Une erreur s\'est produite. Reessaie.' })
     }
   }
 
@@ -445,13 +451,13 @@ client.on('interactionCreate', async interaction => {
       const chercheChannel = await client.channels.fetch(CHERCHE_EQUIPIER_CHANNEL_ID)
       await chercheChannel.send({
         embeds: [new EmbedBuilder()
-          .setTitle('🔍 Recherche équipe — Brawl Stars')
-          .setDescription(`**Joueur :** <@${interaction.user.id}>\n**Pseudo :** ${pseudoBS}\n**Tag :** ${tagBS}\n\n**Présentation :** ${presentation}`)
+          .setTitle('🔍 Recherche equipe - Brawl Stars')
+          .setDescription(`**Joueur :** <@${interaction.user.id}>\n**Pseudo :** ${pseudoBS}\n**Tag :** ${tagBS}\n\n**Presentation :** ${presentation}`)
           .setColor('#FF6B35').setTimestamp()]
       })
-      await interaction.editReply({ content: '✅ Ton profil a été posté dans le canal de recherche d\'équipe !' })
+      await interaction.editReply({ content: '✅ Ton profil a ete poste dans le canal de recherche d\'equipe !' })
     } catch (e) {
-      await interaction.editReply({ content: 'Une erreur s\'est produite. Réessaie.' })
+      await interaction.editReply({ content: 'Une erreur s\'est produite. Reessaie.' })
     }
   }
 
@@ -464,13 +470,13 @@ client.on('interactionCreate', async interaction => {
       const chercheChannel = await client.channels.fetch(CHERCHE_EQUIPIER_CHANNEL_ID)
       await chercheChannel.send({
         embeds: [new EmbedBuilder()
-          .setTitle('🔍 Recherche équipe — Minecraft')
-          .setDescription(`**Joueur :** <@${interaction.user.id}>\n**Pseudo Minecraft Java :** ${pseudoMC}\n\n**Présentation :** ${presentation}`)
+          .setTitle('🔍 Recherche equipe - Minecraft')
+          .setDescription(`**Joueur :** <@${interaction.user.id}>\n**Pseudo Minecraft Java :** ${pseudoMC}\n\n**Presentation :** ${presentation}`)
           .setColor('#5C8A00').setTimestamp()]
       })
-      await interaction.editReply({ content: '✅ Ton profil a été posté dans le canal de recherche d\'équipe !' })
+      await interaction.editReply({ content: '✅ Ton profil a ete poste dans le canal de recherche d\'equipe !' })
     } catch (e) {
-      await interaction.editReply({ content: 'Une erreur s\'est produite. Réessaie.' })
+      await interaction.editReply({ content: 'Une erreur s\'est produite. Reessaie.' })
     }
   }
 
@@ -488,11 +494,23 @@ client.on('interactionCreate', async interaction => {
     try {
       const guild = await client.guilds.fetch(GUILD_ID)
 
-      const role = await guild.roles.create({
+      // Role specifique a l'equipe
+      const roleEquipe = await guild.roles.create({
         name: data.nomEquipe,
         color: data.jeu === 'Brawl Stars' ? '#00C3FF' : '#5C8A00',
-        reason: `E-Series — Équipe ${data.nomEquipe}`
+        reason: `E-Series - Equipe ${data.nomEquipe}`
       })
+
+      // Role global du jeu (Brawl Stars Series ou Minecraft Series)
+      const nomRoleGlobal = data.jeu === 'Brawl Stars' ? 'Brawl Stars Series' : 'Minecraft Series'
+      let roleGlobal = guild.roles.cache.find(r => r.name === nomRoleGlobal)
+      if (!roleGlobal) {
+        roleGlobal = await guild.roles.create({
+          name: nomRoleGlobal,
+          color: data.jeu === 'Brawl Stars' ? '#00C3FF' : '#5C8A00',
+          reason: `E-Series - Role global ${nomRoleGlobal}`
+        })
+      }
 
       const tousLesIds = [
         data.capitaine.discordId,
@@ -502,9 +520,10 @@ client.on('interactionCreate', async interaction => {
       for (const memberId of tousLesIds) {
         try {
           const member = await guild.members.fetch(memberId)
-          await member.roles.add(role)
+          await member.roles.add(roleEquipe)
+          await member.roles.add(roleGlobal)
         } catch (e) {
-          console.error(`Impossible d'ajouter le rôle à ${memberId}:`, e.message)
+          console.error(`Impossible d'ajouter le role a ${memberId}:`, e.message)
         }
       }
 
@@ -515,17 +534,17 @@ client.on('interactionCreate', async interaction => {
         parent: category,
         permissionOverwrites: [
           { id: guild.roles.everyone, deny: [PermissionsBitField.Flags.ViewChannel] },
-          { id: role.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] }
+          { id: roleEquipe.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] }
         ]
       })
 
       await teamChannel.send({
         embeds: [new EmbedBuilder()
-          .setTitle(`🏆 Bienvenue dans le chat de l'équipe ${data.nomEquipe} !`)
+          .setTitle(`🏆 Bienvenue dans le chat de l'equipe ${data.nomEquipe} !`)
           .setDescription(
             `**Jeu :** ${data.jeu}\n` +
             `**Membres :** ${tousLesIds.map(id => `<@${id}>`).join(' ')}\n\n` +
-            `Bonne chance pour la compétition ! 🎮`
+            `Bonne chance pour la competition ! 🎮`
           )
           .setColor(data.jeu === 'Brawl Stars' ? '#00C3FF' : '#5C8A00')]
       })
@@ -533,7 +552,7 @@ client.on('interactionCreate', async interaction => {
       const equipeChannel = await client.channels.fetch(EQUIPES_VALIDEES_CHANNEL_ID)
       await equipeChannel.send({
         embeds: [new EmbedBuilder()
-          .setTitle(`✅ ${data.nomEquipe} — ${data.jeu}`)
+          .setTitle(`✅ ${data.nomEquipe} - ${data.jeu}`)
           .setDescription(
             `**Capitaine :** <@${data.capitaine.discordId}>\n` +
             data.joueurs.map(j => `**${j.role} :** <@${j.discordId}>${j.pseudo ? ` (${j.pseudo})` : ''}${j.info ? ` (${j.info})` : ''}`).join('\n')
@@ -541,14 +560,15 @@ client.on('interactionCreate', async interaction => {
           .setColor('#00C853').setTimestamp()]
       })
 
-      data.statut = 'validée'
-      data.roleId = role.id
+      data.statut = 'validee'
+      data.roleId = roleEquipe.id
+      data.roleGlobalId = roleGlobal.id
       data.channelId = teamChannel.id
       inscriptions.set(id, data)
       await saveData()
 
       await interaction.message.edit({
-        embeds: [new EmbedBuilder().setTitle(`✅ ${data.nomEquipe} validée`).setDescription(`Rôle et canal créés avec succès.`).setColor('#00C853')],
+        embeds: [new EmbedBuilder().setTitle(`✅ ${data.nomEquipe} validee`).setDescription(`Role equipe, role ${nomRoleGlobal} et canal crees avec succes.`).setColor('#00C853')],
         components: []
       })
 
@@ -565,7 +585,7 @@ client.on('interactionCreate', async interaction => {
     inscriptions.delete(id)
     await saveData()
     await interaction.message.edit({
-      embeds: [new EmbedBuilder().setTitle('❌ Inscription refusée').setColor('#FF0000')],
+      embeds: [new EmbedBuilder().setTitle('❌ Inscription refusee').setColor('#FF0000')],
       components: []
     })
   }
@@ -573,13 +593,13 @@ client.on('interactionCreate', async interaction => {
   // COMMANDES ADMIN
   if (interaction.isChatInputCommand()) {
     const isAdmin = interaction.member.permissions.has('Administrator')
-    if (!isAdmin) return interaction.reply({ content: 'Permission refusée.', ephemeral: true })
+    if (!isAdmin) return interaction.reply({ content: 'Permission refusee.', ephemeral: true })
 
     if (interaction.commandName === 'listequipes') {
       const list = [...inscriptions.values()]
-      if (!list.length) return interaction.reply({ content: 'Aucune équipe inscrite.', ephemeral: true })
-      const desc = list.map(e => `**${e.nomEquipe}** (${e.jeu}) — ${e.statut} — Cap: <@${e.capitaine.discordId}>`).join('\n')
-      await interaction.reply({ embeds: [new EmbedBuilder().setTitle(`Équipes inscrites (${list.length})`).setDescription(desc).setColor('#00C3FF')], ephemeral: true })
+      if (!list.length) return interaction.reply({ content: 'Aucune equipe inscrite.', ephemeral: true })
+      const desc = list.map(e => `**${e.nomEquipe}** (${e.jeu}) - ${e.statut} - Cap: <@${e.capitaine.discordId}>`).join('\n')
+      await interaction.reply({ embeds: [new EmbedBuilder().setTitle(`Equipes inscrites (${list.length})`).setDescription(desc).setColor('#00C3FF')], ephemeral: true })
     }
 
     if (interaction.commandName === 'exportequipes') {
@@ -596,7 +616,7 @@ client.on('interactionCreate', async interaction => {
     if (interaction.commandName === 'fermerinscriptions') {
       inscriptionsOpen = false
       await saveData()
-      await interaction.reply({ content: '🔒 Inscriptions fermées.', ephemeral: true })
+      await interaction.reply({ content: '🔒 Inscriptions fermees.', ephemeral: true })
     }
 
     if (interaction.commandName === 'ouvrirscriptions') {
